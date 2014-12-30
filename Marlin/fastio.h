@@ -26,7 +26,7 @@
 
 /// Read a pin
 #ifdef ARDUINO_ARCH_STM32
-#define _READ(IO) digitalRead(IO);
+#define _READ(IO) digitalRead(IO)
 #define _WRITE(IO, v)  digitalWrite(IO,v);
 
 /// toggle a pin
