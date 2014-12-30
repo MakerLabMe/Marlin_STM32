@@ -12,10 +12,12 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include <util/delay.h>
-#include <avr/pgmspace.h>
-#include <avr/eeprom.h>
-#include <avr/interrupt.h>
+#ifndef ARDUINO_ARCH_STM32
+  #include <util/delay.h>
+  #include <avr/pgmspace.h>
+  #include <avr/eeprom.h>
+  #include <avr/interrupt.h>
+#endif
 
 
 #include "fastio.h"

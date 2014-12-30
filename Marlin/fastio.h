@@ -6,7 +6,9 @@
 #ifndef	_FASTIO_ARDUINO_H
 #define	_FASTIO_ARDUINO_H
 
+#ifndef ARDUINO_ARCH_STM32
 #include <avr/io.h>
+#endif
 
 /*
   utility functions
@@ -88,6 +90,8 @@
 
 	added as necessary or if I feel like it- not a comprehensive list!
 */
+
+#ifndef ARDUINO_ARCH_STM32
 
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
 // UART
@@ -4016,5 +4020,7 @@ pins
 #ifndef	DIO0_PIN
 #error pins for this chip not defined in arduino.h! If you write an appropriate pin definition and have this firmware work on your chip, please submit a pull request
 #endif
+
+#endif /* ARDUINO_ARCH_STM32 */
 
 #endif /* _FASTIO_ARDUINO_H */
