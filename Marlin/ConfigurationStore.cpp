@@ -4,29 +4,30 @@
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
 
-void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
-{
-    do
-    {
-        eeprom_write_byte((unsigned char*)pos, *value);
-        pos++;
-        value++;
-    }while(--size);
-}
-#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
-void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
-{
-    do
-    {
-        *value = eeprom_read_byte((unsigned char*)pos);
-        pos++;
-        value++;
-    }while(--size);
-}
-#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
-//======================================================================================
+#ifndef ARDUINO_ARCH_STM32
+  void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
+  {
+      do
+      {
+          eeprom_write_byte((unsigned char*)pos, *value);
+          pos++;
+          value++;
+      }while(--size);
+  }
+  #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
+  void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
+  {
+      do
+      {
+          *value = eeprom_read_byte((unsigned char*)pos);
+          pos++;
+          value++;
+      }while(--size);
+  }
+  #define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
+  //======================================================================================
 
-
+#endif
 
 
 #define EEPROM_OFFSET 100
