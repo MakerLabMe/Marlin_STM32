@@ -1,6 +1,6 @@
-Current Status: Bug Fixing
+STM32 version of Marlin for 3D printer
 ===================
-As we are fixing bugs use the development branch: https://github.com/ErikZalm/Marlin/tree/Development
+Based on Marlin V1.0.1 stable(https://github.com/ErikZalm/Marlin/releases/tag/1.0.1) version. And STM32_Arduino_Cores(https://github.com/MakerLabMe/STM32_Arduino_Cores) add-on for Arduino IDE(1.5.x)
 
 Developer Notes
 ===================
@@ -417,4 +417,3 @@ For examples of these sensors, see: http://www.thingiverse.com/thing:454584, htt
 4 new Mcodes are defined to set relevant parameters: M404, M405, M406, M407 - see above.
 
  Implements a delay buffer to handle the transit delay between where the filament is measured and when it gets to the extruder.
-
