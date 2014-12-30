@@ -60,6 +60,8 @@
 #elif defined(ARDUINO_ARCH_STM32)
   #define MYSERIAL Serial
   #define _delay_ms delay
+  #define cli noInterrupts
+  #define sei interrupts
 #else
   #define MYSERIAL MSerial
 #endif
