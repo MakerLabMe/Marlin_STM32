@@ -65,7 +65,7 @@
 #define BYTE 0
 
 
-#ifndef AT90USB
+#if !defined(AT90USB) && !defined(ARDUINO_ARCH_STM32)
 // Define constants and variables for buffering incoming serial data.  We're
 // using a ring buffer (I think), in which rx_buffer_head is the index of the
 // location to which to write the next incoming character and rx_buffer_tail
@@ -179,7 +179,7 @@ class MarlinSerial //: public Stream
 };
 
 extern MarlinSerial MSerial;
-#endif // !AT90USB
+#endif // !AT90USB && !ARDUINO_ARCH_STM32
 
 // Use the UART for BT in AT90USB configurations
 #if defined(AT90USB) && defined (BTENABLED)

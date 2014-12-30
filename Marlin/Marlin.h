@@ -24,7 +24,7 @@
 #include "Configuration.h"
 #include "pins.h"
 
-#ifndef AT90USB
+#if !defined(AT90USB) && !defined(ARDUINO_ARCH_STM32)
 #define  HardwareSerial_h // trick to disable the standard HWserial
 #endif
 
@@ -36,7 +36,7 @@
 # define analogInputToDigitalPin(p) ((p) + A0)
 #endif
 
-#ifdef AT90USB
+#ifdef AT90USB || ARDUINO_ARCH_STM32
 #include "HardwareSerial.h"
 #endif
 
@@ -57,6 +57,8 @@
    #else
          #define MYSERIAL Serial
    #endif // BTENABLED
+#elif defined(ARDUINO_ARCH_STM32)
+  #define MYSERIAL Serial
 #else
   #define MYSERIAL MSerial
 #endif
