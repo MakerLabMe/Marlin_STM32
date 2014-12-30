@@ -59,6 +59,7 @@
    #endif // BTENABLED
 #elif defined(ARDUINO_ARCH_STM32)
   #define MYSERIAL Serial
+  #define _delay_ms delay
 #else
   #define MYSERIAL MSerial
 #endif
