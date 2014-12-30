@@ -25,7 +25,30 @@
 */
 
 /// Read a pin
+#ifdef ARDUINO_ARCH_STM32
+#define _READ(IO) digitalRead(IO);
+#define _WRITE(IO, v)  digitalWrite(IO,v);
+
+/// toggle a pin
+#define _TOGGLE(IO)  digitalWrite(IO,!_READ(IO));
+
+/// set pin as input
+#define	_SET_INPUT(IO) pinMode(IO,INPUT);
+/// set pin as output
+#define	_SET_OUTPUT(IO) pinMode(IO,OUTPUT);
+
+/// check if pin is an input
+#define	_GET_INPUT(IO)  ((DIO ## IO ## _DDR & MASK(DIO ## IO ## _PIN)) == 0)
+/// check if pin is an output
+#define	_GET_OUTPUT(IO)  ((DIO ## IO ## _DDR & MASK(DIO ## IO ## _PIN)) != 0)
+
+/// check if pin is an timer
+#define	_GET_TIMER(IO)  ((DIO ## IO ## _PWM)
+
+#else //ARDUINO_ARCH_STM32
+
 #define _READ(IO) ((bool)(DIO ## IO ## _RPORT & MASK(DIO ## IO ## _PIN)))
+
 /// write to a pin
 // On some boards pins > 0x100 are used. These are not converted to atomic actions. An critical section is needed.
 
@@ -61,6 +84,8 @@
 
 /// check if pin is an timer
 #define	_GET_TIMER(IO)  ((DIO ## IO ## _PWM)
+
+#endif //!ARDUINO_ARCH_STM32
 
 //  why double up on these macros? see http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
 
