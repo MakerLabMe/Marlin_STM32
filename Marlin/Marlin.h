@@ -207,8 +207,13 @@ void setPwmFrequency(uint8_t pin, int val);
 #endif
 
 #ifndef CRITICAL_SECTION_START
+#ifdef ARDUINO_ARCH_STM32
+  #define CRITICAL_SECTION_START  cli();
+  #define CRITICAL_SECTION_END    sei();
+#else //ARDUINO_ARCH_STM32
   #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
   #define CRITICAL_SECTION_END    SREG = _sreg;
+#endif //!ARDUINO_ARCH_STM32
 #endif //CRITICAL_SECTION_START
 
 extern float homing_feedrate[];
