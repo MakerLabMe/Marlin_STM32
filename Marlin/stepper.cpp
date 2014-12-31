@@ -93,7 +93,10 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 //===========================================================================
 
 #define CHECK_ENDSTOPS  if(check_endstops)
-
+#ifdef ARDUINO_ARCH_STM32
+ #define MultiU16X8toH16(intRes, charIn1, intIn2) intRes = intIn1 * intIn2 >> 16
+ #define MultiU24X24toH16(intRes, longIn1, longIn2) intRes = longIn1 * longIn2 >> 24
+#else //ARDUINO_ARCH_STM32
 // intRes = intIn1 * intIn2 >> 16
 // uses:
 // r26 to store 0
@@ -163,11 +166,17 @@ asm volatile ( \
 : \
 "r26" , "r27" \
 )
-
+#endif //!ARDUINO_ARCH_STM32
 // Some useful constants
 
-#define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
-#define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
+#ifdef ARDUINO_ARCH_STM32
+#pragma message " TODO: add STEPPER_DRIVER_INTERRUPT enable disable functions "
+  #define ENABLE_STEPPER_DRIVER_INTERRUPT()  
+  #define DISABLE_STEPPER_DRIVER_INTERRUPT() 
+#else //ARDUINO_ARCH_STM32
+  #define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
+  #define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
+#endif //!ARDUINO_ARCH_STM32
 
 
 void checkHitEndstops()
@@ -262,6 +271,11 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
 
   if(step_rate < (F_CPU/500000)) step_rate = (F_CPU/500000);
   step_rate -= (F_CPU/500000); // Correct for minimal speed
+  
+  #ifdef ARDUINO_ARCH_STM32
+  #pragma message "TODO: add timer calc functions"
+  
+  #else //ARDUINO_ARCH_STM32
   if(step_rate >= (8*256)){ // higher step rate
     unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
     unsigned char tmp_step_rate = (step_rate & 0x00ff);
@@ -275,6 +289,7 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
   }
+  #endif //!ARDUINO_ARCH_STM32
   if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
   return timer;
 }
@@ -296,7 +311,12 @@ FORCE_INLINE void trapezoid_generator_reset() {
   step_loops_nominal = step_loops;
   acc_step_rate = current_block->initial_rate;
   acceleration_time = calc_timer(acc_step_rate);
+  
+  #ifdef ARDUINO_ARCH_STM32
+   #pragma message "TODO: "
+  #else
   OCR1A = acceleration_time;
+  #endif
 
 //    SERIAL_ECHO_START;
 //    SERIAL_ECHOPGM("advance :");
@@ -312,7 +332,12 @@ FORCE_INLINE void trapezoid_generator_reset() {
 
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
+#ifdef ARDUINO_ARCH_STM32
+ #pragma message "TODO "
+void stepper_ISR()
+#else
 ISR(TIMER1_COMPA_vect)
+#endif
 {
   // If there is no current block, attempt to pop one from the buffer
   if (current_block == NULL) {
@@ -340,7 +365,12 @@ ISR(TIMER1_COMPA_vect)
 //      #endif
     }
     else {
+        #ifdef ARDUINO_ARCH_STM32
+         #pragma message "TODO "
+        #else
         OCR1A=2000; // 1kHz.
+        #endif
+        
     }
   }
 
@@ -541,7 +571,7 @@ ISR(TIMER1_COMPA_vect)
 
 
     for(int8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
-      #ifndef AT90USB
+      #if !defined(AT90USB) && !defined(ARDUINO_ARCH_STM32)
       MSerial.checkRx(); // Check for serial chars.
       #endif
 
@@ -705,7 +735,12 @@ ISR(TIMER1_COMPA_vect)
 
       // step_rate to timer interval
       timer = calc_timer(acc_step_rate);
+      
+      #ifdef ARDUINO_ARCH_STM32
+       #pragma message "TODO "
+      #else
       OCR1A = timer;
+      #endif
       acceleration_time += timer;
       #ifdef ADVANCE
         for(int8_t i=0; i < step_loops; i++) {
@@ -734,7 +769,11 @@ ISR(TIMER1_COMPA_vect)
 
       // step_rate to timer interval
       timer = calc_timer(step_rate);
+      #ifdef ARDUINO_ARCH_STM32
+       #pragma message "TODO "
+      #else
       OCR1A = timer;
+      #endif
       deceleration_time += timer;
       #ifdef ADVANCE
         for(int8_t i=0; i < step_loops; i++) {
@@ -747,7 +786,11 @@ ISR(TIMER1_COMPA_vect)
       #endif //ADVANCE
     }
     else {
+      #ifdef ARDUINO_ARCH_STM32
+       #pragma message "TODO "
+      #else
       OCR1A = OCR1A_nominal;
+      #endif
       // ensure we're running at the correct step rate, even if we just came off an acceleration
       step_loops = step_loops_nominal;
     }
@@ -983,7 +1026,9 @@ void st_init()
     WRITE(E2_STEP_PIN,INVERT_E_STEP_PIN);
     disable_e2();
   #endif
-
+  #ifdef ARDUINO_ARCH_STM32
+   #pragma message "TODO "
+  #else
   // waveform generation = 0100 = CTC
   TCCR1B &= ~(1<<WGM13);
   TCCR1B |=  (1<<WGM12);
@@ -1003,6 +1048,7 @@ void st_init()
 
   OCR1A = 0x4000;
   TCNT1 = 0;
+  #endif //!ARDUINO_ARCH_STM32
   ENABLE_STEPPER_DRIVER_INTERRUPT();
 
   #ifdef ADVANCE
