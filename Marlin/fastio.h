@@ -27,15 +27,15 @@
 /// Read a pin
 #ifdef ARDUINO_ARCH_STM32
 #define _READ(IO) digitalRead(IO)
-#define _WRITE(IO, v)  digitalWrite(IO,v);
+#define _WRITE(IO, v)  digitalWrite(IO,v)
 
 /// toggle a pin
-#define _TOGGLE(IO)  digitalWrite(IO,!_READ(IO));
+#define _TOGGLE(IO)  digitalWrite(IO,!_READ(IO))
 
 /// set pin as input
-#define	_SET_INPUT(IO) pinMode(IO,INPUT);
+#define	_SET_INPUT(IO) pinMode(IO,INPUT)
 /// set pin as output
-#define	_SET_OUTPUT(IO) pinMode(IO,OUTPUT);
+#define	_SET_OUTPUT(IO) pinMode(IO,OUTPUT)
 
 /// check if pin is an input
 #define	_GET_INPUT(IO)  ((DIO ## IO ## _DDR & MASK(DIO ## IO ## _PIN)) == 0)

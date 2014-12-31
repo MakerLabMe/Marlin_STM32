@@ -829,7 +829,7 @@ void tp_init()
 	pinMode(MAX6675_SS, OUTPUT);
 	digitalWrite(MAX6675_SS,1);
   #endif
-
+#ifndef ARDUINO_ARCH_STM32
   // Set analog inputs
   ADCSRA = 1<<ADEN | 1<<ADSC | 1<<ADIF | 0x07;
   DIDR0 = 0;
@@ -864,6 +864,7 @@ void tp_init()
        DIDR2 |= 1<<(TEMP_BED_PIN - 8); 
     #endif
   #endif
+  #endif //!ARDUINO_ARCH_STM32
   
   //Added for Filament Sensor 
   #ifdef FILAMENT_SENSOR
@@ -878,8 +879,12 @@ void tp_init()
   
   // Use timer0 for temperature measurement
   // Interleave temperature interrupt with millies interrupt
+  #ifdef ARDUINO_ARCH_STM32
+   #pragma message "TODO "
+  #else //ARDUINO_ARCH_STM32
   OCR0B = 128;
   TIMSK0 |= (1<<OCIE0B);  
+  #endif //!ARDUINO_ARCH_STM32
   
   // Wait for temperature measurement to settle
   delay(250);
@@ -1178,9 +1183,13 @@ int read_max6675()
 }
 #endif
 
-
+#ifdef ARDUINO_ARCH_STM32
+ #pragma message "TODO "
+ void TEMP_ISR()
+#else //ARDUINO_ARCH_STM32
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
+#endif //!ARDUINO_ARCH_STM32
 {
   //these variables are only accesible from the ISR, but static, so they don't lose their value
   static unsigned char temp_count = 0;
@@ -1256,6 +1265,9 @@ ISR(TIMER0_COMPB_vect)
   switch(temp_state) {
     case 0: // Prepare TEMP_0
       #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         #if TEMP_0_PIN > 7
           ADCSRB = 1<<MUX5;
         #else
@@ -1263,13 +1275,18 @@ ISR(TIMER0_COMPB_vect)
         #endif
         ADMUX = ((1 << REFS0) | (TEMP_0_PIN & 0x07));
         ADCSRA |= 1<<ADSC; // Start conversion
+       #endif //!ARDUINO_ARCH_STM32
       #endif
       lcd_buttons_update();
       temp_state = 1;
       break;
     case 1: // Measure TEMP_0
       #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         raw_temp_0_value += ADC;
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       #ifdef HEATER_0_USES_MAX6675 // TODO remove the blocking
         raw_temp_0_value = read_max6675();
@@ -1278,6 +1295,9 @@ ISR(TIMER0_COMPB_vect)
       break;
     case 2: // Prepare TEMP_BED
       #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         #if TEMP_BED_PIN > 7
           ADCSRB = 1<<MUX5;
         #else
@@ -1285,18 +1305,26 @@ ISR(TIMER0_COMPB_vect)
         #endif
         ADMUX = ((1 << REFS0) | (TEMP_BED_PIN & 0x07));
         ADCSRA |= 1<<ADSC; // Start conversion
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       lcd_buttons_update();
       temp_state = 3;
       break;
     case 3: // Measure TEMP_BED
       #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         raw_temp_bed_value += ADC;
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       temp_state = 4;
       break;
     case 4: // Prepare TEMP_1
       #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         #if TEMP_1_PIN > 7
           ADCSRB = 1<<MUX5;
         #else
@@ -1304,18 +1332,26 @@ ISR(TIMER0_COMPB_vect)
         #endif
         ADMUX = ((1 << REFS0) | (TEMP_1_PIN & 0x07));
         ADCSRA |= 1<<ADSC; // Start conversion
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       lcd_buttons_update();
       temp_state = 5;
       break;
     case 5: // Measure TEMP_1
       #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         raw_temp_1_value += ADC;
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       temp_state = 6;
       break;
     case 6: // Prepare TEMP_2
       #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         #if TEMP_2_PIN > 7
           ADCSRB = 1<<MUX5;
         #else
@@ -1323,13 +1359,18 @@ ISR(TIMER0_COMPB_vect)
         #endif
         ADMUX = ((1 << REFS0) | (TEMP_2_PIN & 0x07));
         ADCSRA |= 1<<ADSC; // Start conversion
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       lcd_buttons_update();
       temp_state = 7;
       break;
     case 7: // Measure TEMP_2
       #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
+      #ifdef ARDUINO_ARCH_STM32
+      #pragma message "TODO "
+      #else //ARDUINO_ARCH_STM32
         raw_temp_2_value += ADC;
+      #endif //!ARDUINO_ARCH_STM32
       #endif
       temp_state = 8;//change so that Filament Width is also measured
       
