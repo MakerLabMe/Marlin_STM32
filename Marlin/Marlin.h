@@ -62,7 +62,7 @@
   #define _delay_ms delay
   #define cli noInterrupts
   #define sei interrupts
-  #define square(X) ((double)(X*X))
+  #define square sq
 #else
   #define MYSERIAL MSerial
 #endif
