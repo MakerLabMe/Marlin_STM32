@@ -538,6 +538,15 @@ void setup()
   setup_powerhold();
   MYSERIAL.begin(BAUDRATE);
   SERIAL_PROTOCOLLNPGM("start");
+  // init those values again.
+  #ifdef ARDUINO_ARCH_STM32
+    buflen = 0;
+//    bufindr = 0;
+    bufindw = 0;
+    serial_count = 0;
+    previous_millis_cmd = 0;
+    current_position[NUM_AXIS] = { 0.0 };
+  #endif
   SERIAL_ECHO_START;
 
   #ifndef ARDUINO_ARCH_STM32
@@ -576,18 +585,23 @@ void setup()
 
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
-
   tp_init();    // Initialize temperature loop
+  Serial.println("01");
   plan_init();  // Initialize planner;
+  Serial.println("02");
   watchdog_init();
+  Serial.println("03");
   st_init();    // Initialize stepper, this enables interrupts!
+  Serial.println("04");
   setup_photpin();
+  Serial.println("05");
   servo_init();
-  
+  Serial.println("06");
+  SET_OUTPUT(13);//for debug
 
   lcd_init();
   _delay_ms(1000);	// wait 1sec to display the splash screen
-
+Serial.println("07");
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
   #endif
@@ -643,9 +657,13 @@ void loop()
     bufindr = (bufindr + 1)%BUFSIZE;
   }
   //check heater every n milliseconds
+  Serial.println("1");
   manage_heater();
+  Serial.println("2");
   manage_inactivity();
+  Serial.println("3");
   checkHitEndstops();
+  Serial.println("4");
   lcd_update();
 }
 
@@ -4297,10 +4315,13 @@ void manage_inactivity()
 {
   if(buflen < (BUFSIZE-1))
     get_command();
-
+    
+  Serial.println("10");
+  
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
       kill();
+  Serial.println("11");
   if(stepper_inactive_time)  {
     if( (millis() - previous_millis_cmd) >  stepper_inactive_time )
     {
@@ -4314,6 +4335,7 @@ void manage_inactivity()
       }
     }
   }
+  Serial.println("12");
   
   #ifdef CHDK //Check if pin should be set to LOW after M240 set it to HIGH
     if (chdkActive && (millis() - chdkHigh > CHDK_DELAY))
@@ -4322,7 +4344,7 @@ void manage_inactivity()
       WRITE(CHDK, LOW);
     }
   #endif
-  
+  Serial.println("13");
   #if defined(KILL_PIN) && KILL_PIN > -1
     if( 0 == READ(KILL_PIN) )
       kill();
@@ -4362,7 +4384,9 @@ void manage_inactivity()
   #ifdef TEMP_STAT_LEDS
       handle_status_leds();
   #endif
+  Serial.println("14");
   check_axes_activity();
+  Serial.println("15");
 }
 
 void kill()

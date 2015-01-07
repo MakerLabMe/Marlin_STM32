@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <avr/pgmspace.h>
 
 #ifndef ARDUINO_ARCH_STM32
   #include <util/delay.h>
-  #include <avr/pgmspace.h>
   #include <avr/eeprom.h>
   #include <avr/interrupt.h>
 #endif
@@ -63,6 +63,8 @@
   #define cli noInterrupts
   #define sei interrupts
   #define square sq
+  #define temp_timer Timer5
+  #define stepper_timer Timer4
 #else
   #define MYSERIAL MSerial
 #endif

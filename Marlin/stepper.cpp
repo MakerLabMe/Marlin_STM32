@@ -171,8 +171,8 @@ asm volatile ( \
 
 #ifdef ARDUINO_ARCH_STM32
 #pragma message " TODO: add STEPPER_DRIVER_INTERRUPT enable disable functions "
-  #define ENABLE_STEPPER_DRIVER_INTERRUPT()  
-  #define DISABLE_STEPPER_DRIVER_INTERRUPT() 
+  #define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIM_ITConfig(TIM4,TIM_IT_CC1, ENABLE);
+  #define DISABLE_STEPPER_DRIVER_INTERRUPT()  TIM_ITConfig(TIM4,TIM_IT_CC1, DISABLE);
 #else //ARDUINO_ARCH_STM32
   #define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
   #define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
@@ -268,14 +268,14 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   else {
     step_loops = 1;
   }
-
-  if(step_rate < (F_CPU/500000)) step_rate = (F_CPU/500000);
-  step_rate -= (F_CPU/500000); // Correct for minimal speed
+#define F_CPU_1 16000000
+  if(step_rate < (F_CPU_1/500000)) step_rate = (F_CPU_1/500000);
   
   #ifdef ARDUINO_ARCH_STM32
   #pragma message "TODO: add timer calc functions"
-  
+  timer = 2000000/step_rate - 1;
   #else //ARDUINO_ARCH_STM32
+  step_rate -= (F_CPU_1/500000); // Correct for minimal speed
   if(step_rate >= (8*256)){ // higher step rate
     unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
     unsigned char tmp_step_rate = (step_rate & 0x00ff);
@@ -314,6 +314,8 @@ FORCE_INLINE void trapezoid_generator_reset() {
   
   #ifdef ARDUINO_ARCH_STM32
    #pragma message "TODO: "
+   stepper_timer.setOverflow(acceleration_time);//stepper_timer working at 2Mhz/1000 = 2khz,    
+   stepper_timer.refresh();
   #else
   OCR1A = acceleration_time;
   #endif
@@ -340,10 +342,13 @@ ISR(TIMER1_COMPA_vect)
 #endif
 {
   // If there is no current block, attempt to pop one from the buffer
+  Serial.println("100");
   if (current_block == NULL) {
     // Anything in the buffer?
+    Serial.println("101");
     current_block = plan_get_current_block();
     if (current_block != NULL) {
+      Serial.println("102");
       current_block->busy = true;
       trapezoid_generator_reset();
       counter_x = -(current_block->step_event_count >> 1);
@@ -363,21 +368,25 @@ ISR(TIMER1_COMPA_vect)
 //      #ifdef ADVANCE
 //      e_steps[current_block->active_extruder] = 0;
 //      #endif
+Serial.println("103");
     }
     else {
         #ifdef ARDUINO_ARCH_STM32
          #pragma message "TODO "
+         stepper_timer.setOverflow(2000-1);//stepper_timer working at 2Mhz/(2000) = 1khz,    
+         stepper_timer.refresh();
         #else
         OCR1A=2000; // 1kHz.
         #endif
-        
+        Serial.println("104");
     }
   }
-
+Serial.println("104a");
   if (current_block != NULL) {
     // Set directions TO DO This should be done once during init of trapezoid. Endstops -> interrupt
+    Serial.println("104b");
     out_bits = current_block->direction_bits;
-
+Serial.println("105");
 
     // Set the direction bits (X_AXIS=A_AXIS and Y_AXIS=B_AXIS for COREXY)
     if((out_bits & (1<<X_AXIS))!=0){
@@ -396,6 +405,7 @@ ISR(TIMER1_COMPA_vect)
         WRITE(X_DIR_PIN, INVERT_X_DIR);
       #endif        
       count_direction[X_AXIS]=-1;
+      Serial.println("106");
     }
     else{
       #ifdef DUAL_X_CARRIAGE
@@ -413,6 +423,7 @@ ISR(TIMER1_COMPA_vect)
         WRITE(X_DIR_PIN, !INVERT_X_DIR);
       #endif        
       count_direction[X_AXIS]=1;
+      Serial.println("107");
     }
     if((out_bits & (1<<Y_AXIS))!=0){
       WRITE(Y_DIR_PIN, INVERT_Y_DIR);
@@ -480,7 +491,7 @@ ISR(TIMER1_COMPA_vect)
         }
       }
     }
-
+Serial.println("108");
     #ifndef COREXY
     if ((out_bits & (1<<Y_AXIS)) != 0) {   // -direction
     #else
@@ -513,7 +524,7 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
     }
-
+Serial.println("109");
     if ((out_bits & (1<<Z_AXIS)) != 0) {   // -direction
       WRITE(Z_DIR_PIN,INVERT_Z_DIR);
       
@@ -569,12 +580,12 @@ ISR(TIMER1_COMPA_vect)
     #endif //!ADVANCE
 
 
-
+Serial.println("110");
     for(int8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
       #if !defined(AT90USB) && !defined(ARDUINO_ARCH_STM32)
       MSerial.checkRx(); // Check for serial chars.
       #endif
-
+Serial.println("111");
       #ifdef ADVANCE
       counter_e += current_block->steps_e;
       if (counter_e > 0) {
@@ -597,7 +608,7 @@ ISR(TIMER1_COMPA_vect)
       if (counter_x > 0) {
         WRITE(X_STEP_PIN, HIGH);
       }
-
+Serial.println("112");
       counter_y += current_block->steps_y;
       if (counter_y > 0) {
         WRITE(Y_STEP_PIN, HIGH);
@@ -614,7 +625,7 @@ ISR(TIMER1_COMPA_vect)
           WRITE_E_STEP(HIGH);
         }
       #endif //!ADVANCE
-
+Serial.println("113");
       if (counter_x > 0) {
         counter_x -= current_block->step_event_count;
         count_position[X_AXIS]+=count_direction[X_AXIS];   
@@ -673,7 +684,7 @@ ISR(TIMER1_COMPA_vect)
           WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
         #endif
         }
-
+Serial.println("114");
         counter_y += current_block->steps_y;
         if (counter_y > 0) {
           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
@@ -690,7 +701,7 @@ ISR(TIMER1_COMPA_vect)
 			WRITE(Y2_STEP_PIN, INVERT_Y_STEP_PIN);
 		  #endif
         }
-
+Serial.println("115");
       counter_z += current_block->steps_z;
       if (counter_z > 0) {
         WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
@@ -707,7 +718,7 @@ ISR(TIMER1_COMPA_vect)
           WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
         #endif
       }
-
+Serial.println("116");
       #ifndef ADVANCE
         counter_e += current_block->steps_e;
         if (counter_e > 0) {
@@ -722,13 +733,14 @@ ISR(TIMER1_COMPA_vect)
       if(step_events_completed >= current_block->step_event_count) break;
     }
     // Calculare new timer value
+    Serial.println("117");
     unsigned short timer;
     unsigned short step_rate;
     if (step_events_completed <= (unsigned long int)current_block->accelerate_until) {
 
       MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
       acc_step_rate += current_block->initial_rate;
-
+Serial.println("118");
       // upper limit
       if(acc_step_rate > current_block->nominal_rate)
         acc_step_rate = current_block->nominal_rate;
@@ -738,6 +750,8 @@ ISR(TIMER1_COMPA_vect)
       
       #ifdef ARDUINO_ARCH_STM32
        #pragma message "TODO "
+       stepper_timer.setOverflow(timer);//stepper_timer working at 2Mhz/(2000) =     
+       stepper_timer.refresh();
       #else
       OCR1A = timer;
       #endif
@@ -762,7 +776,7 @@ ISR(TIMER1_COMPA_vect)
       else {
         step_rate = acc_step_rate - step_rate; // Decelerate from aceleration end point.
       }
-
+Serial.println("119");
       // lower limit
       if(step_rate < current_block->final_rate)
         step_rate = current_block->final_rate;
@@ -771,6 +785,8 @@ ISR(TIMER1_COMPA_vect)
       timer = calc_timer(step_rate);
       #ifdef ARDUINO_ARCH_STM32
        #pragma message "TODO "
+       stepper_timer.setOverflow(timer);//stepper_timer working at 2Mhz/(2000) = 1khz,    
+         stepper_timer.refresh();
       #else
       OCR1A = timer;
       #endif
@@ -788,19 +804,22 @@ ISR(TIMER1_COMPA_vect)
     else {
       #ifdef ARDUINO_ARCH_STM32
        #pragma message "TODO "
+       stepper_timer.setOverflow(OCR1A_nominal);//stepper_timer working at 2Mhz/(2000) = 1khz,    
+       stepper_timer.refresh();
       #else
       OCR1A = OCR1A_nominal;
       #endif
       // ensure we're running at the correct step rate, even if we just came off an acceleration
       step_loops = step_loops_nominal;
     }
-
+Serial.println("120");
     // If current block is finished, reset pointer
     if (step_events_completed >= current_block->step_event_count) {
       current_block = NULL;
       plan_discard_current_block();
     }
   }
+  Serial.println("121");
 }
 
 #ifdef ADVANCE
@@ -1028,6 +1047,15 @@ void st_init()
   #endif
   #ifdef ARDUINO_ARCH_STM32
    #pragma message "TODO "
+    stepper_timer.pause();
+    stepper_timer.setCount(0);
+    stepper_timer.setPrescaleFactor(35);//system clock/36 = 2Mhz;
+    stepper_timer.setMode(TIMER_CH1, TIM_OCMode_Timing);
+    stepper_timer.setCompare(TIMER_CH1, 1);//TIM clock:2MHz,
+    stepper_timer.attachInterrupt(TIMER_CH1,stepper_ISR);//*************************************************************************************
+    stepper_timer.begin();    
+    stepper_timer.setOverflow(0x4000 - 1);//    
+    stepper_timer.refresh();
   #else
   // waveform generation = 0100 = CTC
   TCCR1B &= ~(1<<WGM13);
