@@ -37,7 +37,7 @@
 //===========================================================================
 //=============================public variables  ============================
 //===========================================================================
-block_t *current_block;  // A pointer to the block currently being traced
+block_t *current_block = NULL;  // A pointer to the block currently being traced
 
 
 //===========================================================================
@@ -73,7 +73,7 @@ static volatile bool endstop_z_hit=false;
 bool abort_on_endstop_hit = false;
 #endif
 #ifdef MOTOR_CURRENT_PWM_XY_PIN
-  int motor_current_setting[3] = DEFAULT_PWM_MOTOR_CURRENT;
+  int16_t motor_current_setting[3] = DEFAULT_PWM_MOTOR_CURRENT;
 #endif
 
 static bool old_x_min_endstop=false;
@@ -1306,7 +1306,7 @@ void babystep(const uint8_t axis,const bool direction)
 }
 #endif //BABYSTEPPING
 
-void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
+void digitalPotWrite(int16_t address, int16_t value) // From Arduino DigitalPotControl example
 {
   #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     digitalWrite(DIGIPOTSS_PIN,LOW); // take the SS pin low to select the chip
@@ -1324,7 +1324,7 @@ void digipot_init() //Initialize Digipot Motor Current
 
     SPI.begin();
     pinMode(DIGIPOTSS_PIN, OUTPUT);
-    for(int i=0;i<=4;i++)
+    for(int16_t i=0;i<=4;i++)
       //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
       digipot_current(i,digipot_motor_current[i]);
   #endif
@@ -1340,7 +1340,7 @@ void digipot_init() //Initialize Digipot Motor Current
   #endif
 }
 
-void digipot_current(uint8_t driver, int current)
+void digipot_current(uint8_t driver, int16_t current)
 {
   #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     const uint8_t digipot_ch[] = DIGIPOT_CHANNELS;
@@ -1371,7 +1371,7 @@ void microstep_init()
   pinMode(Z_MS2_PIN,OUTPUT);
   pinMode(E0_MS1_PIN,OUTPUT);
   pinMode(E0_MS2_PIN,OUTPUT);
-  for(int i=0;i<=4;i++) microstep_mode(i,microstep_modes[i]);
+  for(int16_t i=0;i<=4;i++) microstep_mode(i,microstep_modes[i]);
   #endif
 }
 

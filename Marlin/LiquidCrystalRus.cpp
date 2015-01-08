@@ -195,7 +195,7 @@ void LiquidCrystalRus::home()
 
 void LiquidCrystalRus::setCursor(uint8_t col, uint8_t row)
 {
-  int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+  int16_t row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
   if ( row >= _numlines ) {
     row = _numlines-1;    // we count rows starting w/0
   }
@@ -270,7 +270,7 @@ void LiquidCrystalRus::noAutoscroll(void) {
 void LiquidCrystalRus::createChar(uint8_t location, uint8_t charmap[]) {
   location &= 0x7; // we only have 8 locations 0-7
   command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++) {
+  for (int16_t i=0; i<8; i++) {
     write(charmap[i]);
   }
 }
@@ -359,7 +359,7 @@ void LiquidCrystalRus::pulseEnable() {
 }
 
 void LiquidCrystalRus::writeNbits(uint8_t value, uint8_t n) {
-  for (int i = 0; i < n; i++) {
+  for (int16_t i = 0; i < n; i++) {
     pinMode(_data_pins[i], OUTPUT);
     digitalWrite(_data_pins[i], (value >> i) & 0x01);
   }
@@ -369,7 +369,7 @@ void LiquidCrystalRus::writeNbits(uint8_t value, uint8_t n) {
 
 uint8_t LiquidCrystalRus::readNbits(uint8_t n) {
   uint8_t retval=0;
-  for (int i = 0; i < n; i++) {
+  for (int16_t i = 0; i < n; i++) {
     pinMode(_data_pins[i], INPUT);
   }
 
@@ -378,7 +378,7 @@ uint8_t LiquidCrystalRus::readNbits(uint8_t n) {
   digitalWrite(_enable_pin, HIGH);
   delayMicroseconds(1);    // enable pulse must be >450ns
   
-  for (int i = 0; i < n; i++) {
+  for (int16_t i = 0; i < n; i++) {
     retval |= (digitalRead(_data_pins[i]) == HIGH)?(1 << i):0;
   }
 

@@ -71,7 +71,7 @@
 
 #define FONT_STATUSMENU	u8g_font_6x9
 
-int lcd_contrast;
+int16_t lcd_contrast;
 
 // LCD selection
 #ifdef U8GLIB_ST7920
@@ -164,9 +164,9 @@ static void lcd_printPGM(const char* str)
     }
 }
 
-static void _draw_heater_status(int x, int heater) {
+static void _draw_heater_status(int16_t x, int16_t heater) {
   bool isBed = heater < 0;
-  int y = 17 + (isBed ? 1 : 0);
+  int16_t y = 17 + (isBed ? 1 : 0);
   u8g.setFont(FONT_STATUSMENU);
   u8g.setPrintPos(x,6);
   u8g.print(itostr3(int((heater >= 0 ? degTargetHotend(heater) : degTargetBed()) + 0.5)));

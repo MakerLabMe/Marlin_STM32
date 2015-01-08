@@ -7,7 +7,7 @@
 
 //# include "r8lib.h"
 
-int i4_min ( int i1, int i2 )
+int16_t i4_min ( int16_t i1, int16_t i2 )
 
 /******************************************************************************/
 /*
@@ -34,7 +34,7 @@ int i4_min ( int i1, int i2 )
     Output, int I4_MIN, the smaller of I1 and I2.
 */
 {
-  int value;
+  int16_t value;
 
   if ( i1 < i2 )
   {
@@ -205,7 +205,7 @@ double r8_sign ( double x )
   return value;
 }
 
-double r8mat_amax ( int m, int n, double a[] )
+double r8mat_amax ( int16_t m, int16_t n, double a[] )
 
 /******************************************************************************/
 /*
@@ -241,8 +241,8 @@ double r8mat_amax ( int m, int n, double a[] )
     Output, double R8MAT_AMAX, the maximum absolute value entry of A.
 */
 {
-  int i;
-  int j;
+  int16_t i;
+  int16_t j;
   double value;
 
   value = r8_abs ( a[0+0*m] );
@@ -260,7 +260,7 @@ double r8mat_amax ( int m, int n, double a[] )
   return value;
 }
 
-double *r8mat_copy_new ( int m, int n, double a1[] )
+double *r8mat_copy_new ( int16_t m, int16_t n, double a1[] )
 
 /******************************************************************************/
 /*
@@ -295,8 +295,8 @@ double *r8mat_copy_new ( int m, int n, double a1[] )
 */
 {
   double *a2;
-  int i;
-  int j;
+  int16_t i;
+  int16_t j;
 
   a2 = ( double * ) malloc ( m * n * sizeof ( double ) );
 
@@ -313,7 +313,7 @@ double *r8mat_copy_new ( int m, int n, double a1[] )
 
 /******************************************************************************/
 
-void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
+void daxpy ( int16_t n, double da, double dx[], int16_t incx, double dy[], int16_t incy )
 
 /******************************************************************************/
 /*
@@ -365,10 +365,10 @@ void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
     Input, int INCY, the increment between successive entries of DY.
 */
 {
-  int i;
-  int ix;
-  int iy;
-  int m;
+  int16_t i;
+  int16_t ix;
+  int16_t iy;
+  int16_t m;
 
   if ( n <= 0 )
   {
@@ -434,7 +434,7 @@ void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
 }
 /******************************************************************************/
 
-double ddot ( int n, double dx[], int incx, double dy[], int incy )
+double ddot ( int16_t n, double dx[], int16_t incx, double dy[], int16_t incy )
 
 /******************************************************************************/
 /*
@@ -487,10 +487,10 @@ double ddot ( int n, double dx[], int incx, double dy[], int incy )
 */
 {
   double dtemp;
-  int i;
-  int ix;
-  int iy;
-  int m;
+  int16_t i;
+  int16_t ix;
+  int16_t iy;
+  int16_t m;
 
   dtemp = 0.0;
 
@@ -554,7 +554,7 @@ double ddot ( int n, double dx[], int incx, double dy[], int incy )
 }
 /******************************************************************************/
 
-double dnrm2 ( int n, double x[], int incx )
+double dnrm2 ( int16_t n, double x[], int16_t incx )
 
 /******************************************************************************/
 /*
@@ -602,8 +602,8 @@ double dnrm2 ( int n, double x[], int incx )
 */
 {
   double absxi;
-  int i;
-  int ix;
+  int16_t i;
+  int16_t ix;
   double norm;
   double scale;
   double ssq;
@@ -648,8 +648,8 @@ double dnrm2 ( int n, double x[], int incx )
 }
 /******************************************************************************/
 
-void dqrank ( double a[], int lda, int m, int n, double tol, int *kr, 
-  int jpvt[], double qraux[] )
+void dqrank ( double a[], int16_t lda, int16_t m, int16_t n, double tol, int16_t *kr, 
+  int16_t jpvt[], double qraux[] )
 
 /******************************************************************************/
 /*
@@ -723,10 +723,10 @@ void dqrank ( double a[], int lda, int m, int n, double tol, int *kr,
     the QR factorization.
 */
 {
-  int i;
-  int j;
-  int job;
-  int k;
+  int16_t i;
+  int16_t j;
+  int16_t job;
+  int16_t k;
   double *work;
 
   for ( i = 0; i < n; i++ )
@@ -757,8 +757,8 @@ void dqrank ( double a[], int lda, int m, int n, double tol, int *kr,
 }
 /******************************************************************************/
 
-void dqrdc ( double a[], int lda, int n, int p, double qraux[], int jpvt[], 
-  double work[], int job )
+void dqrdc ( double a[], int16_t lda, int16_t n, int16_t p, double qraux[], int16_t jpvt[], 
+  double work[], int16_t job )
 
 /******************************************************************************/
 /*
@@ -838,16 +838,16 @@ void dqrdc ( double a[], int lda, int n, int p, double qraux[], int jpvt[],
     nonzero, pivoting is done.
 */
 {
-  int j;
-  int jp;
-  int l;
-  int lup;
-  int maxj;
+  int16_t j;
+  int16_t jp;
+  int16_t l;
+  int16_t lup;
+  int16_t maxj;
   double maxnrm;
   double nrmxl;
-  int pl;
-  int pu;
-  int swapj;
+  int16_t pl;
+  int16_t pu;
+  int16_t swapj;
   double t;
   double tt;
 
@@ -1006,8 +1006,8 @@ void dqrdc ( double a[], int lda, int n, int p, double qraux[], int jpvt[],
 }
 /******************************************************************************/
 
-int dqrls ( double a[], int lda, int m, int n, double tol, int *kr, double b[], 
-  double x[], double rsd[], int jpvt[], double qraux[], int itask )
+int16_t dqrls ( double a[], int16_t lda, int16_t m, int16_t n, double tol, int16_t *kr, double b[], 
+  double x[], double rsd[], int16_t jpvt[], double qraux[], int16_t itask )
 
 /******************************************************************************/
 /*
@@ -1114,7 +1114,7 @@ int dqrls ( double a[], int lda, int m, int n, double tol, int *kr, double b[],
     -3: ITASK < 1 (fatal error)
 */
 {
-  int ind;
+  int16_t ind;
 
   if ( lda < m )
   {
@@ -1160,8 +1160,8 @@ int dqrls ( double a[], int lda, int m, int n, double tol, int *kr, double b[],
 }
 /******************************************************************************/
 
-void dqrlss ( double a[], int lda, int m, int n, int kr, double b[], double x[], 
-  double rsd[], int jpvt[], double qraux[] )
+void dqrlss ( double a[], int16_t lda, int16_t m, int16_t n, int16_t kr, double b[], double x[], 
+  double rsd[], int16_t jpvt[], double qraux[] )
 
 /******************************************************************************/
 /*
@@ -1234,11 +1234,11 @@ void dqrlss ( double a[], int lda, int m, int n, int kr, double b[], double x[],
     defining the QR factorization.
 */
 {
-  int i;
-  int info;
-  int j;
-  int job;
-  int k;
+  int16_t i;
+  int16_t info;
+  int16_t j;
+  int16_t job;
+  int16_t k;
   double t;
 
   if ( kr != 0 )
@@ -1278,8 +1278,8 @@ void dqrlss ( double a[], int lda, int m, int n, int kr, double b[], double x[],
 }
 /******************************************************************************/
 
-int dqrsl ( double a[], int lda, int n, int k, double qraux[], double y[], 
-  double qy[], double qty[], double b[], double rsd[], double ab[], int job )
+int16_t dqrsl ( double a[], int16_t lda, int16_t n, int16_t k, double qraux[], double y[], 
+  double qy[], double qty[], double b[], double rsd[], double ab[], int16_t job )
 
 /******************************************************************************/
 /*
@@ -1417,16 +1417,16 @@ int dqrsl ( double a[], int lda, int n, int k, double qraux[], double y[],
     index of the first zero diagonal element of R, and B is left unaltered.
 */
 {
-  int cab;
-  int cb;
-  int cqty;
-  int cqy;
-  int cr;
-  int i;
-  int info;
-  int j;
-  int jj;
-  int ju;
+  int16_t cab;
+  int16_t cb;
+  int16_t cqty;
+  int16_t cqy;
+  int16_t cr;
+  int16_t i;
+  int16_t info;
+  int16_t j;
+  int16_t jj;
+  int16_t ju;
   double t;
   double temp;
 /*
@@ -1639,7 +1639,7 @@ int dqrsl ( double a[], int lda, int n, int k, double qraux[], double y[],
 
 /******************************************************************************/
 
-void dscal ( int n, double sa, double x[], int incx )
+void dscal ( int16_t n, double sa, double x[], int16_t incx )
 
 /******************************************************************************/
 /*
@@ -1682,9 +1682,9 @@ void dscal ( int n, double sa, double x[], int incx )
     Input, int INCX, the increment between successive entries of X.
 */
 {
-  int i;
-  int ix;
-  int m;
+  int16_t i;
+  int16_t ix;
+  int16_t m;
 
   if ( n <= 0 )
   {
@@ -1729,7 +1729,7 @@ void dscal ( int n, double sa, double x[], int incx )
 /******************************************************************************/
 
 
-void dswap ( int n, double x[], int incx, double y[], int incy )
+void dswap ( int16_t n, double x[], int16_t incx, double y[], int16_t incy )
 
 /******************************************************************************/
 /*
@@ -1774,10 +1774,10 @@ void dswap ( int n, double x[], int incx, double y[], int incy )
     Input, int INCY, the increment between successive elements of Y.
 */
 {
-  int i;
-  int ix;
-  int iy;
-  int m;
+  int16_t i;
+  int16_t ix;
+  int16_t iy;
+  int16_t m;
   double temp;
 
   if ( n <= 0 )
@@ -1846,7 +1846,7 @@ void dswap ( int n, double x[], int incx, double y[], int incy )
 
 /******************************************************************************/
 
-double *qr_solve ( int m, int n, double a[], double b[] )
+double *qr_solve ( int16_t m, int16_t n, double a[], double b[] )
 
 /******************************************************************************/
 /*
@@ -1897,11 +1897,11 @@ double *qr_solve ( int m, int n, double a[], double b[] )
 */
 {
   double *a_qr;
-  int ind;
-  int itask;
-  int *jpvt;
-  int kr;
-  int lda;
+  int16_t ind;
+  int16_t itask;
+  int16_t *jpvt;
+  int16_t kr;
+  int16_t lda;
   double *qraux;
   double *r;
   double tol;
@@ -1911,7 +1911,7 @@ double *qr_solve ( int m, int n, double a[], double b[] )
   lda = m;
   tol = r8_epsilon ( ) / r8mat_amax ( m, n, a_qr );
   x = ( double * ) malloc ( n * sizeof ( double ) );
-  jpvt = ( int * ) malloc ( n * sizeof ( int ) );
+  jpvt = ( int16_t * ) malloc ( n * sizeof ( int16_t ) );
   qraux = ( double * ) malloc ( n * sizeof ( double ) );
   r = ( double * ) malloc ( m * sizeof ( double ) );
   itask = 1;

@@ -454,28 +454,28 @@ void check_axes_activity()
   unsigned char z_active = 0;
   unsigned char e_active = 0;
   unsigned char tail_fan_speed = fanSpeed;
-  Serial.println("20");
+//  Serial.println("20");
   #ifdef BARICUDA
   unsigned char tail_valve_pressure = ValvePressure;
   unsigned char tail_e_to_p_pressure = EtoPPressure;
   #endif
   block_t *block;
-  Serial.println("21");
-  Serial.println(block_buffer_tail);
-  Serial.println(block_buffer_head);
+//  Serial.println("21");
+//  Serial.println(block_buffer_tail);
+//  Serial.println(block_buffer_head);
   if(block_buffer_tail != block_buffer_head)
   {
-    Serial.println("210");
+//    Serial.println("210");
     uint8_t block_index = block_buffer_tail;
     tail_fan_speed = block_buffer[block_index].fan_speed;
-    Serial.println("211");
+//    Serial.println("211");
     #ifdef BARICUDA
     tail_valve_pressure = block_buffer[block_index].valve_pressure;
     tail_e_to_p_pressure = block_buffer[block_index].e_to_p_pressure;
     #endif
     while(block_index != block_buffer_head)
     {
-      Serial.println("212");
+//      Serial.println("212");
       Serial.println(block_index);
       Serial.println(block_buffer_head);
       block = &block_buffer[block_index];
@@ -486,7 +486,7 @@ void check_axes_activity()
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
-  Serial.println("22");
+//  Serial.println("22");
   if((DISABLE_X) && (x_active == 0)) disable_x();
   if((DISABLE_Y) && (y_active == 0)) disable_y();
   if((DISABLE_Z) && (z_active == 0)) disable_z();
@@ -496,7 +496,7 @@ void check_axes_activity()
     disable_e1();
     disable_e2(); 
   }
-  Serial.println("23");
+//  Serial.println("23");
 #if defined(FAN_PIN) && FAN_PIN > -1
   #ifdef FAN_KICKSTART_TIME
     static unsigned long fan_kick_end;
@@ -512,14 +512,14 @@ void check_axes_activity()
       fan_kick_end = 0;
     }
   #endif//FAN_KICKSTART_TIME
-  Serial.println("24");
+//  Serial.println("24");
   #ifdef FAN_SOFT_PWM
   fanSpeedSoftPwm = tail_fan_speed;
   #else
   analogWrite(FAN_PIN,tail_fan_speed);
   #endif//!FAN_SOFT_PWM
 #endif//FAN_PIN > -1
-Serial.println("25");
+//Serial.println("25");
 #ifdef AUTOTEMP
   getHighESpeed();
 #endif
@@ -547,7 +547,7 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
 #endif  //ENABLE_AUTO_BED_LEVELING
 {
   // Calculate the buffer head after we push this byte
-  int next_buffer_head = next_block_index(block_buffer_head);
+  int16_t next_buffer_head = next_block_index(block_buffer_head);
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
@@ -750,7 +750,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
     // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
   float inverse_second = feed_rate * inverse_millimeters;
 
-  int moves_queued=(block_buffer_head-block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
+  int16_t moves_queued=(block_buffer_head-block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef OLD_SLOWDOWN
@@ -824,7 +824,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
   float speed_factor = 1.0; //factor <=1 do decrease speed
-  for(int i=0; i < 4; i++)
+  for(int16_t i=0; i < 4; i++)
   {
     current_speed[i] = delta_mm[i] * inverse_second;
     if(fabs(current_speed[i]) > max_feedrate[i])

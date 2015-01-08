@@ -206,7 +206,7 @@ void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
 #ifdef FAST_PWM_FAN
-void setPwmFrequency(uint8_t pin, int val);
+void setPwmFrequency(uint8_t pin, int16_t val);
 #endif
 
 #ifndef CRITICAL_SECTION_START
@@ -221,9 +221,9 @@ void setPwmFrequency(uint8_t pin, int val);
 
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
-extern int feedmultiply;
-extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
-extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
+extern int16_t feedmultiply;
+extern int16_t extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
+extern int16_t extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
 extern float volumetric_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
 extern float current_position[NUM_AXIS] ;
 extern float add_homing[3];
@@ -241,10 +241,10 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
-extern int fanSpeed;
+extern int16_t fanSpeed;
 #ifdef BARICUDA
-extern int ValvePressure;
-extern int EtoPPressure;
+extern int16_t ValvePressure;
+extern int16_t EtoPPressure;
 #endif
 
 #ifdef FAN_SOFT_PWM
@@ -256,9 +256,9 @@ extern unsigned char fanSpeedSoftPwm;
   extern bool filament_sensor;  //indicates that filament sensor readings should control extrusion  
   extern float filament_width_meas; //holds the filament diameter as accurately measured 
   extern signed char measurement_delay[];  //ring buffer to delay measurement
-  extern int delay_index1, delay_index2;  //index into ring buffer
+  extern int16_t delay_index1, delay_index2;  //index into ring buffer
   extern float delay_dist; //delay distance counter
-  extern int meas_delay_cm; //delay distance
+  extern int16_t meas_delay_cm; //delay distance
 #endif
 
 #ifdef FWRETRACT
@@ -275,7 +275,7 @@ extern unsigned long stoptime;
 extern uint8_t active_extruder;
 
 #ifdef DIGIPOT_I2C
-extern void digipot_i2c_set_current( int channel, float current );
+extern void digipot_i2c_set_current( int16_t channel, float current );
 extern void digipot_i2c_init();
 #endif
 

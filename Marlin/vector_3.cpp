@@ -149,10 +149,10 @@ void matrix_3x3::debug(char* title)
 {
 	SERIAL_PROTOCOL(title);
 	SERIAL_PROTOCOL("\n");
-	int count = 0;
-	for(int i=0; i<3; i++)
+	int16_t count = 0;
+	for(int16_t i=0; i<3; i++)
 	{
-		for(int j=0; j<3; j++)
+		for(int16_t j=0; j<3; j++)
 		{
 			SERIAL_PROTOCOL(matrix[count]);
 			SERIAL_PROTOCOLPGM(" ");

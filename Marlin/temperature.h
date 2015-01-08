@@ -36,18 +36,18 @@ void manage_heater(); //it is critical that this is called periodically.
  float analog2widthFil(); 
  
 // For converting raw Filament Width to an extrusion ratio 
- int widthFil_to_size_ratio();
+ int16_t widthFil_to_size_ratio();
 #endif
 
 // low level conversion routines
 // do not use these routines and variables outside of temperature.cpp
-extern int target_temperature[EXTRUDERS];  
+extern int16_t target_temperature[EXTRUDERS];  
 extern float current_temperature[EXTRUDERS];
 #ifdef SHOW_TEMP_ADC_VALUES
-  extern int current_temperature_raw[EXTRUDERS];
-  extern int current_temperature_bed_raw;
+  extern int16_t current_temperature_raw[EXTRUDERS];
+  extern int16_t current_temperature_bed_raw;
 #endif
-extern int target_temperature_bed;
+extern int16_t target_temperature_bed;
 extern float current_temperature_bed;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   extern float redundant_temperature;
@@ -71,7 +71,7 @@ extern float current_temperature_bed;
   
   
 #ifdef BABYSTEPPING
-  extern volatile int babystepsTodo[3];
+  extern volatile int16_t babystepsTodo[3];
 #endif
   
 //high level conversion routines, for use outside of temperature.cpp
@@ -157,18 +157,18 @@ FORCE_INLINE bool isCoolingBed() {
 
 
 
-int getHeaterPower(int heater);
+int16_t getHeaterPower(int16_t heater);
 void disable_heater();
 void setWatch();
 void updatePID();
 
 #if defined (THERMAL_RUNAWAY_PROTECTION_PERIOD) && THERMAL_RUNAWAY_PROTECTION_PERIOD > 0
-void thermal_runaway_protection(int *state, unsigned long *timer, float temperature, float target_temperature, int heater_id, int period_seconds, int hysteresis_degc);
-static int thermal_runaway_state_machine[3]; // = {0,0,0};
+void thermal_runaway_protection(int16_t *state, unsigned long *timer, float temperature, float target_temperature, int16_t heater_id, int16_t period_seconds, int16_t hysteresis_degc);
+static int16_t thermal_runaway_state_machine[3]; // = {0,0,0};
 static unsigned long thermal_runaway_timer[3]; // = {0,0,0};
 static bool thermal_runaway = false;
   #if TEMP_SENSOR_BED != 0
-    static int thermal_runaway_bed_state_machine;
+    static int16_t thermal_runaway_bed_state_machine;
     static unsigned long thermal_runaway_bed_timer;
   #endif
 #endif
@@ -184,7 +184,7 @@ FORCE_INLINE void autotempShutdown(){
  #endif
 }
 
-void PID_autotune(float temp, int extruder, int ncycles);
+void PID_autotune(float temp, int16_t extruder, int16_t ncycles);
 
 #endif
 
