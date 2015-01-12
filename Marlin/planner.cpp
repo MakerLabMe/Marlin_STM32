@@ -476,8 +476,8 @@ void check_axes_activity()
     while(block_index != block_buffer_head)
     {
 //      Serial.println("212");
-      Serial.println(block_index);
-      Serial.println(block_buffer_head);
+//      Serial.println(block_index);
+//      Serial.println(block_buffer_head);
       block = &block_buffer[block_index];
       if(block->steps_x != 0) x_active++;
       if(block->steps_y != 0) y_active++;
@@ -900,7 +900,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
       block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
   }
   block->acceleration = block->acceleration_st / steps_per_mm;
-  block->acceleration_rate = (long)((float)block->acceleration_st * (16777216.0 / (F_CPU / 8.0)));
+  block->acceleration_rate = (long)((float)block->acceleration_st * (16777216.0 / (F_CPU_1 / 8.0)));
 
 #if 0  // Use old jerk for now
   // Compute path unit vector

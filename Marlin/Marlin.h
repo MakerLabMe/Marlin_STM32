@@ -65,6 +65,7 @@
   #define square sq
   #define temp_timer Timer5
   #define stepper_timer Timer4
+  #define F_CPU_1 16000000
 #else
   #define MYSERIAL MSerial
   #define Serial MSerial

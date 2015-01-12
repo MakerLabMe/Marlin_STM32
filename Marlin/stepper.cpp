@@ -94,8 +94,8 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
 #define CHECK_ENDSTOPS  if(check_endstops)
 #ifdef ARDUINO_ARCH_STM32
- #define MultiU16X8toH16(intRes, charIn1, intIn2) intRes = intIn1 * intIn2 >> 16
- #define MultiU24X24toH16(intRes, longIn1, longIn2) intRes = longIn1 * longIn2 >> 24
+ #define MultiU16X8toH16(intRes, charIn1, intIn2) intRes = ((charIn1) * (intIn2)) >> 16
+ #define MultiU24X24toH16(intRes, longIn1, longIn2) intRes = ((uint64_t)(longIn1) * (longIn2)) >> 24
 #else //ARDUINO_ARCH_STM32
 // intRes = intIn1 * intIn2 >> 16
 // uses:
@@ -255,6 +255,7 @@ void step_wait(){
 
 FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   unsigned short timer;
+//  Serial.println(step_rate);
   if(step_rate > MAX_STEP_FREQUENCY) step_rate = MAX_STEP_FREQUENCY;
 
   if(step_rate > 20000) { // If steprate > 20kHz >> step 4 times
@@ -268,7 +269,7 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   else {
     step_loops = 1;
   }
-#define F_CPU_1 16000000
+
   if(step_rate < (F_CPU_1/500000)) step_rate = (F_CPU_1/500000);
   
   #ifdef ARDUINO_ARCH_STM32
@@ -277,20 +278,24 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   #else //ARDUINO_ARCH_STM32
   step_rate -= (F_CPU_1/500000); // Correct for minimal speed
   if(step_rate >= (8*256)){ // higher step rate
-    unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
+    unsigned short *table_address = (unsigned short *)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
     unsigned char tmp_step_rate = (step_rate & 0x00ff);
     unsigned short gain = (unsigned short)pgm_read_word_near(table_address+2);
     MultiU16X8toH16(timer, tmp_step_rate, gain);
     timer = (unsigned short)pgm_read_word_near(table_address) - timer;
   }
   else { // lower step rates
-    unsigned short table_address = (unsigned short)&speed_lookuptable_slow[0][0];
+    unsigned short *table_address = (unsigned short *)&speed_lookuptable_slow[0][0];
     table_address += ((step_rate)>>1) & 0xfffc;
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
   }
   #endif //!ARDUINO_ARCH_STM32
   if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
+  
+//  Serial.print(step_rate);
+//  Serial.print("  ");
+//  Serial.println(timer);
   return timer;
 }
 
@@ -342,10 +347,12 @@ void TIM4_IRQHandler()//void stepper_ISR()
 ISR(TIMER1_COMPA_vect)
 #endif
 {
+  #ifdef ARDUINO_ARCH_STM32
   if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
   {
   
   TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  #endif
   #if 1
   // If there is no current block, attempt to pop one from the buffer
 //  Serial.println("100");
@@ -831,8 +838,10 @@ ISR(TIMER1_COMPA_vect)
   }
   #endif
 //  Serial.println("121");
-digitalWrite(13,!digitalRead(13));
+//digitalWrite(13,!digitalRead(13));
+  #ifdef ARDUINO_ARCH_STM32
     }
+  #endif
 }
 
 #ifdef ADVANCE
@@ -1090,7 +1099,7 @@ NVIC_InitTypeDef NVIC_InitStructure;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseStructure.TIM_Prescaler = 35;//TIMER0_PRESCALE-1
-    TIM_TimeBaseStructure.TIM_Period = 4000;
+    TIM_TimeBaseStructure.TIM_Period = 0x4000-1;
 
     TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
     

@@ -33,7 +33,7 @@
 #define _TOGGLE(IO)  digitalWrite(IO,!_READ(IO))
 
 /// set pin as input
-#define	_SET_INPUT(IO) pinMode(IO,INPUT)
+#define	_SET_INPUT(IO) pinMode(IO,INPUT_PULLUP)
 /// set pin as output
 #define	_SET_OUTPUT(IO) pinMode(IO,OUTPUT)
 
