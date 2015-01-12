@@ -67,6 +67,7 @@
   #define stepper_timer Timer4
 #else
   #define MYSERIAL MSerial
+  #define Serial MSerial
 #endif
 
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))

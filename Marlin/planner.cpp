@@ -102,8 +102,8 @@ unsigned char g_uc_extruder_last_move[3] = {0,0,0};
 //=================semi-private variables, used in inline  functions    =====
 //===========================================================================
 block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion instfructions
-volatile unsigned char block_buffer_head;           // Index of the next block to be pushed
-volatile unsigned char block_buffer_tail;           // Index of the block to process now
+volatile unsigned char block_buffer_head=0;           // Index of the next block to be pushed
+volatile unsigned char block_buffer_tail=0;           // Index of the block to process now
 
 //===========================================================================
 //=============================private variables ============================
@@ -488,8 +488,11 @@ void check_axes_activity()
   }
 //  Serial.println("22");
   if((DISABLE_X) && (x_active == 0)) disable_x();
+//  Serial.println("22a");
   if((DISABLE_Y) && (y_active == 0)) disable_y();
+//  Serial.println("22b");
   if((DISABLE_Z) && (z_active == 0)) disable_z();
+//  Serial.println("22c");
   if((DISABLE_E) && (e_active == 0))
   {
     disable_e0();

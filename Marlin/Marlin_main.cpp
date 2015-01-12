@@ -404,22 +404,22 @@ void serial_echopair_P(const char *s_P, unsigned long v)
 
 #ifdef SDSUPPORT
   #include "SdFatUtil.h"
-  int16_t freeMemory() { return SdFatUtil::FreeRam(); }
+  int freeMemory() { return SdFatUtil::FreeRam(); }
 #else
   extern "C" {
     #ifndef ARDUINO_ARCH_STM32
-    extern unsigned int16_t __bss_end;
-    extern unsigned int16_t __heap_start;
+    extern unsigned int __bss_end;
+    extern unsigned int __heap_start;
     extern void *__brkval;
     #endif
-    int16_t freeMemory() {
+    int freeMemory() {
       #ifndef ARDUINO_ARCH_STM32
-      int16_t free_memory;
+      int free_memory;
 
-      if ((int16_t)__brkval == 0)
-        free_memory = ((int16_t)&free_memory) - ((int16_t)&__bss_end);
+      if ((int)__brkval == 0)
+        free_memory = ((int)&free_memory) - ((int)&__bss_end);
       else
-        free_memory = ((int16_t)&free_memory) - ((int16_t)__brkval);
+        free_memory = ((int)&free_memory) - ((int)__brkval);
 
       return free_memory;
       #endif
@@ -606,8 +606,8 @@ void setup()
   SET_OUTPUT(13);//for debug
 
   lcd_init();
-  _delay_ms(1000);	// wait 1sec to display the splash screen
-Serial.println("07");
+//  _delay_ms(1000);	// wait 1sec to display the splash screen
+Serial.println("****** 07");
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
   #endif
@@ -663,7 +663,7 @@ void loop()
     bufindr = (bufindr + 1)%BUFSIZE;
   }
   //check heater every n milliseconds
-//  Serial.println("1");
+//  Serial.println("******1");
   manage_heater();
 //  Serial.println("2");
   manage_inactivity();
@@ -4350,7 +4350,7 @@ void manage_inactivity()
       WRITE(CHDK, LOW);
     }
   #endif
-  // Serial.println("13");
+//  // Serial.println("13");
   #if defined(KILL_PIN) && KILL_PIN > -1
     if( 0 == READ(KILL_PIN) )
       kill();

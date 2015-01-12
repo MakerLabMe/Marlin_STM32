@@ -1494,7 +1494,7 @@ ISR(TIMER0_COMPB_vect)
 
   if(temp_count >= OVERSAMPLENR) // 10 * 16 * 1/(16000000/64/256)  = 164ms.For stduino 10/2 * 16 * 1/1000 = 80ms
   {
-    digitalWrite(13,!digitalRead(13));
+//    digitalWrite(13,!digitalRead(13));
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
     {
       current_temperature_raw[0] = raw_temp_0_value;    
