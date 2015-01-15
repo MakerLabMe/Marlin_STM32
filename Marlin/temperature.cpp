@@ -777,6 +777,7 @@ void tp_init()
   MCUCR=(1<<JTD);
 #endif
 
+
   // Finish init of mult extruder arrays
   for(int16_t e = 0; e < EXTRUDERS; e++) {
     // populate with the first value
@@ -891,10 +892,7 @@ void tp_init()
 //    temp_timer.setOverflow(500);
     temp_timer.setMode(TIMER_CH1, TIM_OCMode_Timing);
     temp_timer.setCompare(TIMER_CH1, 1); //temp_timer working at 1000hz
-    //Serial3.println("temp_timer1");
     temp_timer.attachCompare1Interrupt(TEMP_ISR);
-    //Serial3.println("temp_timer2");
-    //Serial3.println(temp_timer.getCount());
 //    temp_timer.refresh();
     temp_timer.begin();
   #else //ARDUINO_ARCH_STM32
@@ -1494,7 +1492,7 @@ ISR(TIMER0_COMPB_vect)
 
   if(temp_count >= OVERSAMPLENR) // 10 * 16 * 1/(16000000/64/256)  = 164ms.For stduino 10/2 * 16 * 1/1000 = 80ms
   {
-    digitalWrite(13,!digitalRead(13));
+//    digitalWrite(13,!digitalRead(13));
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
     {
       current_temperature_raw[0] = raw_temp_0_value;    
