@@ -399,7 +399,7 @@ For example, suppose you measured the endstop position and it was 20mm to the ri
 * \#define Y_PROBE_OFFSET_FROM_EXTRUDER 10
 * \#define Z_PROBE_OFFSET_FROM_EXTRUDER 2.75
 
-That's it.. enjoy never having to calibrate your Z endstop neither leveling your bed by hand anymore ;-)
+That's it... enjoy never having to calibrate your Z endstop neither leveling your bed by hand anymore ;-)
 
 Filament Sensor
 ---------------
